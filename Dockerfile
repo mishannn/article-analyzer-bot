@@ -1,6 +1,13 @@
 # Этап 1: Сборка проекта
 FROM gradle:8.5-jdk21 AS build
 
+# ARG для памяти и флагов — можно задавать при сборке
+ARG JVM_MAX_HEAP="768m"
+ARG JVM_MIN_HEAP="512m"
+ARG GRADLE_FLAGS="--no-daemon --no-parallel"
+
+ENV GRADLE_OPTS="-Xmx${JVM_MAX_HEAP} -Xms${JVM_MIN_HEAP}"
+
 # Указываем рабочую директорию внутри контейнера
 WORKDIR /app
 
@@ -11,7 +18,7 @@ COPY build.gradle.kts settings.gradle.kts ./
 COPY src ./src
 
 # Собираем проект
-RUN gradle shadowJar --no-daemon
+RUN gradle shadowJar $GRADLE_FLAGS
 
 # Этап 2: Создание финального образа
 FROM openjdk:21-jdk-slim
