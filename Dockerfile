@@ -2,9 +2,9 @@
 FROM gradle:8.5-jdk21 AS build
 
 # ARG для памяти и флагов — можно задавать при сборке
-ARG JVM_MAX_HEAP="768m"
+ARG JVM_MAX_HEAP="2g"
 ARG JVM_MIN_HEAP="512m"
-ARG GRADLE_FLAGS="--no-daemon --no-parallel"
+ARG GRADLE_FLAGS="--no-daemon"
 
 ENV GRADLE_OPTS="-Xmx${JVM_MAX_HEAP} -Xms${JVM_MIN_HEAP}"
 
