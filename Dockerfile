@@ -1,23 +1,26 @@
-FROM gradle:8.5-jdk17 AS build
+# Этап 1: Сборка проекта
+FROM gradle:8.5-jdk21 AS build
 
-# Копируем исходники
-WORKDIR /app
-COPY . .
-
-# Собираем приложение (предполагается, что используется Gradle)
-RUN gradle clean build -x test
-
-# --- Stage 2: Minimal runtime image ---
-FROM eclipse-temurin:17-jre
-
-# Задаем рабочую директорию
+# Указываем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Копируем собранный JAR из предыдущего stage
+# Копируем файлы build.gradle.kts и settings.gradle.kts
+COPY build.gradle.kts settings.gradle.kts ./
+
+# Копируем исходный код приложения
+COPY src ./src
+
+# Собираем проект
+RUN gradle shadowJar --no-daemon
+
+# Этап 2: Создание финального образа
+FROM openjdk:21-jdk-slim
+
+# Указываем рабочую директорию внутри контейнера
+WORKDIR /app
+
+# Копируем собранный JAR-файл из первого этапа
 COPY --from=build /app/build/libs/*.jar app.jar
 
-# Открываем порт (по необходимости)
-EXPOSE 8080
-
-# Команда запуска
+# Команда для запуска приложения
 ENTRYPOINT ["java", "-jar", "app.jar"]

@@ -1,6 +1,7 @@
 plugins {
     kotlin("jvm") version "2.1.20"
     kotlin("plugin.serialization") version "2.1.20"
+    id("com.gradleup.shadow") version "9.0.0-beta12"
 }
 
 group = "com.github.mishannn.articlereader"
@@ -23,9 +24,16 @@ dependencies {
     implementation("org.jsoup:jsoup:1.19.1")
 }
 
+tasks.jar {
+    manifest {
+        attributes["Main-Class"] = "com.github.mishannn.articlereader.MainKt"
+    }
+}
+
 tasks.test {
     useJUnitPlatform()
 }
+
 kotlin {
     jvmToolchain(21)
 }
