@@ -1,11 +1,15 @@
 plugins {
     kotlin("jvm") version "2.1.20"
     kotlin("plugin.serialization") version "2.1.20"
-    id("com.gradleup.shadow") version "9.0.0-beta12"
+    application
 }
 
 group = "com.github.mishannn.articlereader"
 version = "1.0-SNAPSHOT"
+
+application {
+    mainClass.set("com.github.mishannn.articlereader.MainKt")
+}
 
 repositories {
     mavenCentral()
@@ -22,12 +26,6 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.4")
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     implementation("org.jsoup:jsoup:1.19.1")
-}
-
-tasks.jar {
-    manifest {
-        attributes["Main-Class"] = "com.github.mishannn.articlereader.MainKt"
-    }
 }
 
 tasks.test {

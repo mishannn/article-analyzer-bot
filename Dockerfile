@@ -18,16 +18,13 @@ COPY build.gradle.kts settings.gradle.kts ./
 COPY src ./src
 
 # Собираем проект
-RUN gradle shadowJar $GRADLE_FLAGS
+RUN gradle installDist $GRADLE_FLAGS
 
 # Этап 2: Создание финального образа
 FROM openjdk:21-jdk-slim
 
-# Указываем рабочую директорию внутри контейнера
 WORKDIR /app
 
-# Копируем собранный JAR-файл из первого этапа
-COPY --from=build /app/build/libs/*.jar app.jar
+COPY --from=build /app/build/install/article-analyzer-bot/ ./
 
-# Команда для запуска приложения
-ENTRYPOINT ["java", "-jar", "app.jar"]
+ENTRYPOINT ["./bin/article-analyzer-bot"]
