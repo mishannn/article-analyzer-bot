@@ -1,6 +1,5 @@
-package com.github.mishannn.articlereader.article
+package com.github.mishannn.articlereader.contentextractor
 
-import com.github.mishannn.articlereader.bot.TelegramBot
 import com.github.mishannn.articlereader.utils.UrlValidator
 import io.ktor.client.HttpClient
 import io.ktor.client.request.get
@@ -21,7 +20,7 @@ class HabrContentExtractor(
         val url = message.trim()
 
         require(UrlValidator.isValidUrl(url)) {
-            "Сообщение должно содержать только ссылку на статью на Habr!"
+            "Не найдена ссылка на Habr в сообщении!"
         }
 
         logger.debug("Get article from Habr")

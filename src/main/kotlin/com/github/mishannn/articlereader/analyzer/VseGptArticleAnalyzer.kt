@@ -1,4 +1,4 @@
-package com.github.mishannn.articlereader.article
+package com.github.mishannn.articlereader.analyzer
 
 import io.ktor.client.*
 import io.ktor.client.call.*

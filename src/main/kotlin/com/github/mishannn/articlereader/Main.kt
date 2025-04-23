@@ -1,9 +1,9 @@
 package com.github.mishannn.articlereader
 
-import com.github.mishannn.articlereader.article.ArticleAnalyzer
-import com.github.mishannn.articlereader.article.ContentExtractor
-import com.github.mishannn.articlereader.article.HabrContentExtractor
-import com.github.mishannn.articlereader.article.VseGptArticleAnalyzer
+import com.github.mishannn.articlereader.analyzer.ArticleAnalyzer
+import com.github.mishannn.articlereader.contentextractor.ContentExtractor
+import com.github.mishannn.articlereader.contentextractor.HabrContentExtractor
+import com.github.mishannn.articlereader.analyzer.VseGptArticleAnalyzer
 import com.github.mishannn.articlereader.bot.Bot
 import com.github.mishannn.articlereader.bot.TelegramBot
 import io.ktor.client.HttpClient
@@ -29,7 +29,10 @@ fun main() {
             })
         }
     }
-    val bot: Bot = TelegramBot(config.telegramToken)
+    val bot: Bot = TelegramBot(config.telegramToken) { message -> // Получаем последнюю ссылку из сообщения
+        val links = message.captionEntities.filter { captionEntity -> captionEntity.type == "text_link" }
+        links[links.lastIndex]?.url ?: message.text
+    }
     val contentExtractor: ContentExtractor = HabrContentExtractor(httpClient)
     val articleAnalyzer: ArticleAnalyzer = VseGptArticleAnalyzer(
         httpClient,

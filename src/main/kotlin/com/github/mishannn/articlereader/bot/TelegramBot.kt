@@ -11,9 +11,10 @@ import org.telegram.telegrambots.longpolling.util.LongPollingSingleThreadUpdateC
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText
 import org.telegram.telegrambots.meta.api.objects.Update
+import org.telegram.telegrambots.meta.api.objects.message.Message
 import org.telegram.telegrambots.meta.generics.TelegramClient
 
-class TelegramBot(val token: String) : Bot {
+class TelegramBot(val token: String, val messageTransformer: (Message) -> String = { it.text }) : Bot {
     private val telegramClient: TelegramClient = OkHttpTelegramClient(token)
     private val botsApplication = TelegramBotsLongPollingApplication()
     private val logger: Logger = LoggerFactory.getLogger(TelegramBot::class.java)
@@ -23,7 +24,7 @@ class TelegramBot(val token: String) : Bot {
         override fun consume(update: Update) {
             logger.debug("Received update. HasMessage = {}", update.hasMessage())
 
-            if (update.hasMessage() && update.message.hasText()) {
+            if (update.hasMessage()) {
                 logger.debug("Send loading message")
                 val readingMessage = SendMessage.builder()
                     .chatId(update.message.chatId)
@@ -36,7 +37,7 @@ class TelegramBot(val token: String) : Bot {
                 CoroutineScope(Dispatchers.Default).async {
                     logger.debug("Execute message handler")
                     val responseText = try {
-                        messageHandler(update.message.text)
+                        messageHandler(messageTransformer(update.message))
                     } catch (e: Exception) {
                         "❌ Ошибка: ${e.message ?: "Неизвестная ошибка"}"
                     }
